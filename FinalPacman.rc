@@ -1,0 +1,6 @@
+Icons:
+IDI_FINALPACMAN
+IDI_SMALL
+String Table:
+IDS_APP_TITLE     103     FinalPacman
+IDC_FINALPACMAN     109      FINALPACMAN
