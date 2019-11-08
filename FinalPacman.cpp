@@ -12,8 +12,7 @@ bool lost = false, immune = false, doingPacMan = false;
 wchar_t szWindowClass[100];
 long __stdcall WndProc(HWND__* hWnd, unsigned int message, unsigned int wParam, long lParam);
 vector<HDC__*> object_DCs = { CreateCompatibleDC(0), CreateCompatibleDC(0x0), CreateCompatibleDC(0), CreateCompatibleDC(0), CreateCompatibleDC(0x0), CreateCompatibleDC(0) };
-tagPOINT pos = { 365, 460 };
-vector<tagPOINT> ghostPosList = { {310, 225}, {345, 225}, {330, 225}, {415, 225} };
+vector<tagPOINT> posList = { {365, 460}, {310, 225}, {345, 225}, {330, 225}, {415, 225} };
 char DIRECTION = 'A';
 vector<char> lastGhostMoves[4] = { {'A', 'A', 'A', 'A'}, {'A', 'A', 'A', 'A'}, {'A', 'A', 'A', 'A'}, {'A', 'A', 'A', 'A'} };
 class Pellet {
@@ -37,8 +36,7 @@ void doPellet(int x, int y) {
 }
 void reset(int liveInc = lives - 0x1, int roundInc = Round) {
 	G1P = -0x1, G2P = -0x2, G3P = -0x1, G4P = -0x1, eatNum = 0x1, lives = liveInc, Round = roundInc;
-	pos = { 365, 460 };
-	ghostPosList = { {310, 225}, {345, 225}, {330, 225}, {415, 225} };
+	vector<tagPOINT> ghostPosList = { {310, 225}, {345, 225}, {330, 225}, {415, 225} };
 	for (vector<char>& move : lastGhostMoves) move = { 'A', 'A', 'A', 'A' };
 }
 int WINAPI wWinMain(_In_ HINSTANCE__ *hInstance, _In_opt_ HINSTANCE__ *hPrevInstance, _In_ WCHAR *lpCmdLine, _In_ int nCmdShow) {
@@ -53,22 +51,21 @@ int WINAPI wWinMain(_In_ HINSTANCE__ *hInstance, _In_opt_ HINSTANCE__ *hPrevInst
 	if (!hWnd) return 0x0;
 	ShowWindow(hWnd, nCmdShow);
     HACCEL__ *hAccelTable = LoadAcceleratorsW(hInstance, ((wchar_t*)((unsigned long)((unsigned short)((109))))));
-	HANDLE pacBmp = LoadImageW(0, wstring(pacPathReal.begin(), pacPathReal.end()).c_str(), 0, 0, 0, 0x10), bBmp = LoadImageW(0, wstring(backgroundPath.begin(), backgroundPath.end()).c_str(), 0, 0, 0, 0x00000010), bmp = LoadImageW(0, wstring(gP.begin(), gP.end()).c_str(), 0, 0, 0, 0x00000010), bmp2 = LoadImageW(0, wstring(g2P.begin(), g2P.end()).c_str(), 0, 0, 0, 0x00000010), bmp3 = LoadImageW(0, wstring(g3P.begin(), g3P.end()).c_str(), 0, 0, 0, 0x00000010), bmp4 = LoadImage(0, wstring(g4P.begin(), g4P.end()).c_str(), 0, 0, 0, 0x00000010);
+	HANDLE pacBmp = LoadImageW(0, wstring(pacPathReal.begin(), pacPathReal.end()).c_str(), 0, 0, 0, 0x10) , bBmp = LoadImageW(0, wstring(backgroundPath.begin(), backgroundPath.end()).c_str(), 0, 0, 0, 0x00000010), bmp = LoadImageW(0, wstring(gP.begin(), gP.end()).c_str(), 0, 0, 0, 0x00000010), bmp2 = LoadImageW(0, wstring(g2P.begin(), g2P.end()).c_str(), 0, 0, 0, 0x00000010), bmp3 = LoadImageW(0, wstring(g3P.begin(), g3P.end()).c_str(), 0, 0, 0, 0x00000010), bmp4 = LoadImage(0, wstring(g4P.begin(), g4P.end()).c_str(), 0, 0, 0, 0x00000010);
 	tagMSG msg;
 	HGDIOBJ temp = SelectObject(object_DCs[0], pacBmp), bT = SelectObject(object_DCs[1], bBmp), c1 = SelectObject(object_DCs[2], bmp), c2 = SelectObject(object_DCs[3], bmp2), c3 = SelectObject(object_DCs[4], bmp3), c4 = SelectObject(object_DCs[5], bmp4);
 	while (GetMessageW(&msg, nullptr, 0x0, 0x0)) {
 		if (!TranslateAcceleratorW(msg.hwnd, hAccelTable, &msg)) {
-			pos.x = (pos.x + 700) % 700;
-			for (int i = 0; i < 4; i++) ghostPosList[i].x = (ghostPosList[i].x + 700) % 700;
+			for (int i = 0; i < 4; i++) posList[i].x = (posList[i].x + 700) % 700;
 			TranslateMessage(&msg);
 			DispatchMessageW(&msg);
 }	}	}
 bool validMove(HDC__ *hdc, char move, tagPOINT cpos) {
 	vector<tagPOINT> ghostPList;
-	if (cpos.x == ghostPosList[0].x && cpos.y == ghostPosList[0].y) ghostPList = { ghostPosList[1], ghostPosList[2], ghostPosList[3] };
-	else if (cpos.x == ghostPosList[1].x && cpos.y == ghostPosList[1].y) ghostPList = { ghostPosList[0], ghostPosList[2], ghostPosList[3] };
-	else if (cpos.x == ghostPosList[2].x && cpos.y == ghostPosList[2].y) ghostPList = { ghostPosList[0], ghostPosList[1], ghostPosList[3] };
-	else if (cpos.x == ghostPosList[3].x && cpos.y == ghostPosList[3].y) ghostPList = { ghostPosList[0], ghostPosList[1], ghostPosList[2] };
+	if (cpos.x == posList[1].x && cpos.y == posList[1].y) ghostPList = { posList[2], posList[3], posList[4] };
+	else if (cpos.x == posList[2].x && cpos.y == posList[2].y) ghostPList = { posList[1], posList[3], posList[4] };
+	else if (cpos.x == posList[3].x && cpos.y == posList[3].y) ghostPList = { posList[1], posList[2], posList[4] };
+	else if (cpos.x == posList[4].x && cpos.y == posList[4].y) ghostPList = { posList[1], posList[2], posList[3] };
 	if (move == 'U') cpos.y -= 0x5;
 	else if (move == 'D') cpos.y += 0x5;
 	else if (move == 'L') cpos.x -= 0x5;
@@ -89,7 +86,7 @@ void flip(vector<char>& list) {
 		else if (item == 'L') item = 'R';
 		else item = 'L';
 }	}
-void updateGhosts(HDC__ *hdc, int c, tagPOINT GT = { 0x0, 0x0 }, tagPOINT cur = { 0x0, 0x0 }) {
+void updateGhosts(HDC__* hdc, int c, tagPOINT GT = { 0x0, 0x0 }, tagPOINT cur = { 0x0, 0x0 }, vector<tagPOINT> ghostPosList = { posList[1], posList[2], posList[3], posList[4] }) {
 	ghostTimer.time = .1;
 	vector<vector<char>> ghostMoveLists;
 	vector<int> validGhosts;
@@ -111,16 +108,16 @@ void updateGhosts(HDC__ *hdc, int c, tagPOINT GT = { 0x0, 0x0 }, tagPOINT cur = 
 				vector<char> priority, lastMoveList;
 				if (i == 0 && G1P == -1) GT = { 365, 180 };
 				else if (i == 0 && G1P == 0) GT = { 700, 25 };
-				else if ((i == 0 && G1P == 1) || (i == 2 && G3P == 1 && sqrt((ghostPosList[2].x - pos.x) ^ 2 + (ghostPosList[2].y - pos.y) ^ 2) > 8)) GT = pos;
+				else if ((i == 0 && G1P == 1) || (i == 2 && G3P == 1 && sqrt((ghostPosList[2].x - posList[0].x) ^ 2 + (ghostPosList[2].y - posList[0].y) ^ 2) > 8)) GT = posList[0];
 				else if (i == 1 && G2P == -2) GT = { 375, 165 };
 				else if (i == 1 && G2P == -1) GT = { 445, 165 };
 				else if (i == 1 && G2P == 0) GT = { 50, 25 };
-				else if (i == 1 && G2P == 1) GT = { pos.x + 20, pos.y + 20 };
+				else if (i == 1 && G2P == 1) GT = { posList[0].x + 20, posList[0].y + 20 };
 				else if (i == 2 && G3P == -1) GT = { 380, 175 };
-				else if ((i == 2 && G3P == 0) || (i == 2 && G3P == 1 && !(sqrt((ghostPosList[2].x - pos.x) ^ 2 + (ghostPosList[2].y - pos.y) ^ 2) > 8))) GT = { 50, 469 };
+				else if ((i == 2 && G3P == 0) || (i == 2 && G3P == 1 && !(sqrt((ghostPosList[2].x - posList[0].x) ^ 2 + (ghostPosList[2].y - posList[0].y) ^ 2) > 8))) GT = { 50, 469 };
 				else if (i == 3 && G4P == -1) GT = { 415, 175 };
 				else if (i == 3 && G4P == 0) GT = { 700, 469 };
-				else if (i == 3 && G4P == 1) GT = { ghostPosList[0].x + 2 * abs(ghostPosList[0].x - pos.x), ghostPosList[0].y + 2 * abs(ghostPosList[0].y - pos.y) };
+				else if (i == 3 && G4P == 1) GT = { ghostPosList[0].x + 2 * abs(ghostPosList[0].x - posList[0].x), ghostPosList[0].y + 2 * abs(ghostPosList[0].y - posList[0].y) };
 				cur = ghostPosList[i];
 				lastMoveList = lastGhostMoves[i];
 				if (abs(GT.x - cur.x) > abs(GT.y - cur.y) && cur.x < GT.x && (cur.y < GT.y || (cur.y == GT.y && c == 1))) priority = { 'R', 'D', lastMoveList[0], 'U', 'L' };
@@ -157,34 +154,22 @@ void updateGhosts(HDC__ *hdc, int c, tagPOINT GT = { 0x0, 0x0 }, tagPOINT cur = 
 					vector<char> temp = { priority[0], lastMoveList[0], lastMoveList[1], lastMoveList[2] };
 					lastMoveList = temp;
 				}
-				if (i == 0) {
-					ghostPosList[0] = cur;
-					lastGhostMoves[0] = lastMoveList;
-					if (ghostPosList[0].x == GT.x && ghostPosList[0].y == GT.y) G1P++;
-				}
-				else if (i == 1) {
-					ghostPosList[1] = cur;
-					lastGhostMoves[1] = lastMoveList;
-					if (ghostPosList[1].x == GT.x && ghostPosList[1].y == GT.y) G2P++;
-				}
-				else if (i == 2) {
-					ghostPosList[2] = cur;
-					lastGhostMoves[2] = lastMoveList;
-					if (ghostPosList[2].x == GT.x && ghostPosList[2].y == GT.y) G3P++;
-				}
-				else {
-					ghostPosList[3] = cur;
-					lastGhostMoves[3] = lastMoveList;
-					if (ghostPosList[3].x == GT.x && ghostPosList[3].y == GT.y) G4P++;
-}	}	}	}	}
+				ghostPosList[i] = cur;
+				lastGhostMoves[i] = lastMoveList;
+				int PT[4] = { G1P, G2P, G3P, G4P };
+				if (ghostPosList[i].x == GT.x && ghostPosList[i].y == GT.y) PT[i]++;
+				G1P = PT[0], G2P = PT[1], G3P = PT[2], G4P = PT[3];
+	}	}	}
+	posList[1] = ghostPosList[0], posList[2] = ghostPosList[1], posList[3] = ghostPosList[2], posList[4] = ghostPosList[3];
+}
 bool checkPos(HDC__ *hdc) {
-	for (auto i = 0; i < 0x8; i++) if (GetBValue(GetPixel(hdc, pos.x + 2 * i + 5, pos.y)) > 75 || GetBValue(GetPixel(hdc, pos.x + 2 * i + 5, pos.y + 21)) > 75 || GetBValue(GetPixel(hdc, pos.x, pos.y + 2 * i + 5)) > 75 || GetBValue(GetPixel(hdc, pos.x + 21, pos.y + 2 * i + 5)) > 75) return true;
+	for (auto i = 0; i < 0x8; i++) if (GetBValue(GetPixel(hdc, posList[0].x + 2 * i + 5, posList[0].y)) > 75 || GetBValue(GetPixel(hdc, posList[0].x + 2 * i + 5, posList[0].y + 21)) > 75 || GetBValue(GetPixel(hdc, posList[0].x, posList[0].y + 2 * i + 5)) > 75 || GetBValue(GetPixel(hdc, posList[0].x + 21, posList[0].y + 2 * i + 5)) > 75) return true;
 	return false;
 }
 void doRemoval(vector<Pellet>& pList, int scoreInc) {
 	loop: for (auto i = 0; i < pList.size(); i++) {
 		Pellet cur = pList[i];
-		if (cur.display == true && cur.pos.x <= pos.x + 25 && cur.pos.x >= pos.x - 0xA && cur.pos.y >= pos.y - 0xA && cur.pos.y <= pos.y + 25) {
+		if (cur.display == true && cur.pos.x <= posList[0].x + 25 && cur.pos.x >= posList[0].x - 0xA && cur.pos.y >= posList[0].y - 0xA && cur.pos.y <= posList[0].y + 25) {
 			score += scoreInc;
 			if (scoreInc == 50) clock.time = FRZINC;
 			vector<Pellet> temp;
@@ -203,14 +188,14 @@ long __stdcall WndProc(HWND__ *hWnd, unsigned int message, unsigned int wParam, 
 		HGDIOBJ pacmanSELECT = SelectObject(hdc, drawBmp), H = SelectObject(menuDC, menuImg);
 		InvalidateRect(hWnd, 0, false);
 		if (doingPacMan == true) {
-			vector<tagPOINT> ghostPos[4] = { { ghostPosList[0], {310, 225} } , { ghostPosList[1], {345, 225} } , { ghostPosList[2], {380, 225} } , { ghostPosList[3], {415, 225} } };
+			vector<tagPOINT> ghostPos[4] = { { posList[1], {310, 225} } , { posList[2], {345, 225} } , { posList[3], {380, 225} } , { posList[4], {415, 225} } };
 			BitBlt(hdc, 0, 0, 750, 502, object_DCs[1], 0, 0, (unsigned long)0xCC0020);
 			if (ghostTimer.tick(.01) <= 0) updateGhosts(hdc, rand() % 2);
 			Sleep(25);
 			if (clock.tick(.01) > 0x0) immune = true;
 			else immune = false;
 			doRemoval(pellets_list, 10), doRemoval(pac_pellets_list, 50);
-			for (vector<tagPOINT>& cur : ghostPos) if (cur[0].x <= pos.x + 25 && pos.x <= cur[0x0].x + 25 && cur[0].y <= pos.y + 25 && pos.y <= cur[0].y + 25) {
+			for (vector<tagPOINT>& cur : ghostPos) if (cur[0].x <= posList[0].x + 25 && posList[0].x <= cur[0x0].x + 25 && cur[0].y <= posList[0].y + 25 && posList[0].y <= cur[0].y + 25) {
 				if (immune == false && lives > 0x0) reset();
 				else if (immune == false && lives <= 0x0) lost = true;
 				else {
@@ -231,20 +216,20 @@ long __stdcall WndProc(HWND__ *hWnd, unsigned int message, unsigned int wParam, 
 			}
 			if (lost == true) TextOutW(hdc, 0x0, 0x0, L"You died :(", 12), TextOutW(hdc, 0, 20, wstring(msg.begin(), msg.end()).c_str(), msg.length()), TextOutW(hdc, 0, 40, wstring(Msg.begin(), Msg.end()).c_str(), Msg.length()), TextOutW(hdc, 0, 60, wstring(rd.begin(), rd.end()).c_str(), rd.length());
 			else {
-				BitBlt(hdc, pos.x, pos.y, 0x19, 0x19, object_DCs[0], 0x0, 0x0, (unsigned long)0x00CC0020);
+				BitBlt(hdc, posList[0].x, posList[0].y, 0x19, 0x19, object_DCs[0], 0x0, 0x0, (unsigned long)0x00CC0020);
 				for (auto i = 0x0; i < pellets_list.size(); i++) if (pellets_list[i].display == true) BitBlt(hdc, pellets_list[i].pos.x, pellets_list[i].pos.y, 5, 5, pellets_list[i].DC, 0, 0, (unsigned long)0xCC0020);
 				for (auto i = 0x0; i < pac_pellets_list.size(); i++) if (pac_pellets_list[i].display == true) BitBlt(hdc, pac_pellets_list[i].pos.x, pac_pellets_list[i].pos.y, 7, 7, pac_pellets_list[i].DC, 0, 0, (unsigned long)0xCC0020);
 				TextOutW(hdc, 0x0, 0x0, wstring(scoreStr.begin(), scoreStr.end()).c_str(), scoreStr.length());
 				for (auto i = 0x0; i < lives; i++) BitBlt(hdc, 35 * i + 620, 270, 0x19, 0x19, object_DCs[0], 0x0, 0x0, (unsigned long)0xCC0020);
-				if (DIRECTION == 'U') pos.y -= 0x5;
-				else if (DIRECTION == 'D') pos.y += 0x5;
-				else if (DIRECTION == 'L') pos.x -= 0x5;
-				else if (DIRECTION == 'R') pos.x += 0x5;
-				if (checkPos(hdc) == true && DIRECTION == 'U') pos.y += 0x5;
-				else if (checkPos(hdc) == true && DIRECTION == 'D') pos.y -= 0x5;
-				else if (checkPos(hdc) == true && DIRECTION == 'L') pos.x += 0x5;
-				else if (checkPos(hdc) == true && DIRECTION == 'R') pos.x -= 0x5;
-				vector<tagPOINT> ghostPos = { ghostPosList[0], ghostPosList[1], ghostPosList[2], ghostPosList[3] };
+				if (DIRECTION == 'U') posList[0].y -= 0x5;
+				else if (DIRECTION == 'D') posList[0].y += 0x5;
+				else if (DIRECTION == 'L') posList[0].x -= 0x5;
+				else if (DIRECTION == 'R') posList[0].x += 0x5;
+				if (checkPos(hdc) == true && DIRECTION == 'U') posList[0].y += 0x5;
+				else if (checkPos(hdc) == true && DIRECTION == 'D') posList[0].y -= 0x5;
+				else if (checkPos(hdc) == true && DIRECTION == 'L') posList[0].x += 0x5;
+				else if (checkPos(hdc) == true && DIRECTION == 'R') posList[0].x -= 0x5;
+				vector<tagPOINT> ghostPos = { posList[1], posList[2], posList[3], posList[4] };
 				for (auto i = 0; i < 4; i++) BitBlt(hdc, ghostPos[i].x, ghostPos[i].y, 0x19, 0x19, object_DCs[i+2], 0x0, 0x0, (unsigned int)0xCC0020);
 		}	}
 		else BitBlt(hdc, 0x0, 0x0, 0x2EE, 0x1F6, menuDC, 0x0, 0x0, (unsigned long)0xCC0020), TextOutW(hdc, 0x0, 0x0, L"Press Any Key to play Pacman!!! Warning: It does take a little while to load.", 78);
@@ -267,10 +252,10 @@ long __stdcall WndProc(HWND__ *hWnd, unsigned int message, unsigned int wParam, 
 			if (add.x == -5 && add.y == 0) d = 'L';
 			else if (add.x == 0 && add.y == -5) d = 'U';
 			else if (add.x == 0 && add.y == 5) d = 'D';
-			else d = 'R';
-			pos.x += add.x, pos.y += add.y;
+			else if (add.x == 5 && add.y == 0) d = 'R';
+			posList[0].x += add.x, posList[0].y += add.y;
 			if (checkPos(GetDC(hWnd)) == false) DIRECTION = d;
-			pos.x -= add.x, pos.y -= add.y;
+			posList[0].x -= add.x, posList[0].y -= add.y;
 		}
 		break;
 	case 0x2: PostQuitMessage(0);
