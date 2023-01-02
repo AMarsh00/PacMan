@@ -1,4 +1,4 @@
-#include "FinalPacman.h"//Fix bugs and add documentation!!!
+#include "Pacman.h"//Fix bugs and add documentation!!!
 class timer {
 public: int time;
 	int tick(int c) {
